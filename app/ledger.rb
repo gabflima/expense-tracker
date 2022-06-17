@@ -3,11 +3,13 @@ module ExpenseTracker
 
   class Ledger
     def record(expense)
-      return RecordResult.new(false, -1, "Nothing Implemented")
+      DB[:expenses].insert(expense)
+      id = DB[:expenses].max(:id)
+      RecordResult.new(true, id, nil)
     end
 
     def expenses_on(date)
-
+      
     end
   end
   
