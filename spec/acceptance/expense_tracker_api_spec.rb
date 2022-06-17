@@ -23,14 +23,32 @@ module ExpenseTracker
     end
 
     it 'records submitted expenses' do
-      # Arrange
-      coffee = {
+      # Arrange and post_expenses
+      coffee = post_expense({
         'payee' => 'Starbucks',
         'amount' => 5.75,
         'date' => '2017-06-10'
-      }
+      })
 
-      post_expense(coffee)
+      zoo = post_expense({
+        'payee' => 'Zoo',
+        'amount' => 15.25,
+        'date' => '2017-06-10'
+      })
+
+      groceries = post_expense({
+        'payee' => 'Whole Foods',
+        'amount' => 95.20,
+        'date' => '2017-06-11'
+      })
+
+      # Act
+      get '/expenses/2017-06-10'
+      
+      #Assert
+      expect(last_response.status).to eq(200)
+      expenses = JSON.parse(last_response.body)
+      expect(expenses).to contain_exactly(coffee, zoo)
     end
   end
 end
