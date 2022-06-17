@@ -3,7 +3,6 @@ require 'rack/test'
 
 
 module ExpenseTracker
-  
   # create simple model
   RecordResult = Struct.new(:success?, :expense_id, :error_message)
 
@@ -14,14 +13,14 @@ module ExpenseTracker
     let(:ledger) { instance_double('ExpenseTracker::Ledger') }
 
     def app
-      API.new(Ledger.new)
+      API.new(ledger)
+    end
+
+    def json_response
+      JSON.parse(last_response.body)
     end
 
     describe 'POST /expenses' do
-      def json_response
-        JSON.parse(last_response.body)
-      end
-
       context 'when the expense is sucessfully recorded' do
         let(:expense) { 
           { 'some' => 'data' }
@@ -70,14 +69,44 @@ module ExpenseTracker
     end
 
     describe 'GET /expenses/:date' do
+      let(:date) { "2017-06-12" }
+
       context 'when expenses exist on the given date' do
-        it 'returns the expense records as JSON'
-        it 'responds with a 200 (OK)'
+        let (:expense) { { 'some' => 'data' } }
+
+        before do
+          allow(ledger).to receive(:expenses_on)
+            .with(date)
+            .and_return([expense])
+        end
+
+        it 'returns the expense records as JSON' do
+          get "/expenses/#{date}"
+          expect(json_response).to include(expense)
+        end
+
+        it 'responds with a 200 (OK)' do
+          get "/expenses/#{date}"
+          expect(last_response.status).to eq(200)
+        end
       end
 
       context 'when there are no expenses on the given date' do
-        it 'returns an empty array as JSON'
-        it 'responds with a 200 (OK)'
+        before do
+          allow(ledger).to receive(:expenses_on)
+            .with(date)
+            .and_return(JSON.generate([]))
+        end
+
+        it 'returns an empty array as JSON' do
+          get "/expenses/#{date}"
+          expect(json_response).to eq("[]")
+        end
+
+        it 'responds with a 200 (OK)' do
+          get "/expenses/#{date}"
+          expect(last_response.status).to eq(200)
+        end
       end
     end
 
