@@ -18,9 +18,12 @@ module ExpenseTracker
         'date' => '2017-06-10'
       }
 
-      # Act and default Assert
+      # Act
       # Rack::Test::Methods#post - simulate posts by direct call, no parsing
       post '/expenses', JSON.generate(coffee)
+
+      # Assert
+      expect(last_response.status).to eq(200)
     end
   end
 end
