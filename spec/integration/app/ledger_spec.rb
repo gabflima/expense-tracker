@@ -3,7 +3,7 @@ require_relative '../../../config/sequel'
 require_relative '../../support/db'
 
 module ExpenseTracker
-  RSpec.describe Ledger do
+  RSpec.describe Ledger, :aggregate_failures do # will not abort example on first failure
     let(:ledger) { Ledger.new }
     let(:expense) do
       {
@@ -15,7 +15,7 @@ module ExpenseTracker
 
     describe '#record' do
       context 'with a valid expense' do
-        it 'successfully saves the expense in the DB' do
+        it 'successfully saves the expense in the DB' do 
           result = ledger.record(expense)
 
           expect(result).to be_success
