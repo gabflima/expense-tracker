@@ -10,11 +10,11 @@ module ExpenseTracker
   RSpec.describe API do
     include Rack::Test::Methods
 
-    # declare a double, which will replace every call to the class in argument
+    # declare a double, which will mimic every call to the class in argument
     let(:ledger) { instance_double('ExpenseTracker::Ledger') }
 
     def app
-      API.new(ledger)
+      API.new(Ledger.new)
     end
 
     describe 'POST /expenses' do

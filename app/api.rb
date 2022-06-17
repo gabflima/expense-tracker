@@ -1,5 +1,6 @@
 require 'sinatra/base'
 require 'json'
+require_relative 'ledger'
 
 module ExpenseTracker
   class API < Sinatra::Base
@@ -17,7 +18,7 @@ module ExpenseTracker
         JSON.generate({'expense_id' => result.expense_id})
       else
         status 422
-        JSON.generate({'error' => "Expense incomplete"})
+        JSON.generate({'error' => result.error_message})
       end
     end
 
