@@ -3,7 +3,7 @@ require 'json'
 
 module ExpenseTracker
   class API < Sinatra::Base
-    def initialize(ledger: Ledger.new)
+    def initialize(ledger = Ledger.new)
       @ledger = ledger
       super()
     end

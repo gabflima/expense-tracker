@@ -1,19 +1,21 @@
 require_relative '../../../app/api'
-require_relative 'rack/test'
+require 'rack/test'
+
 
 module ExpenseTracker
+  
   # create simple model
   RecordResult = Struct.new(:success?, :expense_id, :error_message)
 
   RSpec.describe API do
     include Rack::Test::Methods
-    
-    def app
-      API.new(ledger: ledger)
-    end
 
     # declare a double
     let(:ledger) { instance_double('ExpenseTracker::Ledger') }
+
+    def app
+      API.new(ledger)
+    end
 
     describe 'POST /expenses' do
       context 'when the expense is sucessfully recorded' do
