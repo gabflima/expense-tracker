@@ -13,9 +13,9 @@ module ExpenseTracker
     def post_expense(expense)
       # Act
       # Rack::Test::Methods#post - simulate posts by direct call, no parsing
-      post '/expenses', JSON.generate(coffee)
+      post '/expenses', JSON.generate(expense)
 
-      # Assert
+      #Assert
       parsed = JSON.parse(last_response.body)
       expect(last_response.status).to eq(200)
       expect(parsed).to include('expense_id' => a_kind_of(Integer))
