@@ -11,7 +11,14 @@ module ExpenseTracker
     post '/expenses' do
       expense = JSON.parse(request.body.read)
       result = @ledger.record(expense)
-      JSON.generate({'expense_id' => result.expense_id})
+
+      if result.success?
+        status 200 
+        JSON.generate({'expense_id' => result.expense_id})
+      else
+        status 422
+        JSON.generate({'error' => "Expense incomplete"})
+      end
     end
 
     get '/expenses/:date' do
