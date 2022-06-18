@@ -4,7 +4,7 @@ require 'rack/test'
 
 module ExpenseTracker
   # create simple model
-  RecordResult = Struct.new(:success?, :expense_id, :error_message)
+  RecordResult = Struct.new(:success?, :expense_id, :errors)
 
   RSpec.describe API do
     include Rack::Test::Methods
@@ -53,12 +53,12 @@ module ExpenseTracker
           # declare a mapping of function call and argument to response in double
           allow(ledger).to receive(:record)
             .with(expense)
-            .and_return(RecordResult.new(false, -1, "Expense incomplete"))
+            .and_return(RecordResult.new(false, nil, ["Expense incomplete"]))
         end
 
         it 'returns an error message' do
           post '/expenses', JSON.generate(expense)
-          expect(json_response).to include('error' => 'Expense incomplete')
+          expect(json_response).to include('error' => ['Expense incomplete'])
         end
 
         it 'responds with a 422 (Unprocessable entity)' do 
@@ -95,12 +95,12 @@ module ExpenseTracker
         before do
           allow(ledger).to receive(:expenses_on)
             .with(date)
-            .and_return(JSON.generate([]))
+            .and_return([])
         end
 
         it 'returns an empty array as JSON' do
           get "/expenses/#{date}"
-          expect(json_response).to eq("[]")
+          expect(json_response).to eq([])
         end
 
         it 'responds with a 200 (OK)' do

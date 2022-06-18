@@ -18,7 +18,7 @@ module ExpenseTracker
         JSON.generate({'expense_id' => result.expense_id})
       else
         status 422
-        JSON.generate({'error' => result.error_message})
+        JSON.generate({'error' => result.errors})
       end
     end
 
