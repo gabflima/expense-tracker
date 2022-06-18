@@ -1,9 +1,8 @@
 require_relative '../../../app/ledger'
 require_relative '../../../config/sequel'
-require_relative '../../support/db'
 
 module ExpenseTracker
-  RSpec.describe Ledger, :aggregate_failures do # will not abort example on first failure
+  RSpec.describe Ledger, :aggregate_failures, :db do # will not abort example on first failure
     let(:ledger) { Ledger.new }
     let(:expense) do
       {
@@ -19,19 +18,17 @@ module ExpenseTracker
           result = ledger.record(expense)
 
           expect(result).to be_success
-          expect(DB[:expenses].all).to include a_hash_including(
+          expect(DB[:expenses].all).to match [a_hash_including(
             id: result.expense_id,
             payee: 'Starbucks',
             amount: 5.75,
             date: Date.iso8601('2017-06-10')
-          )
+          )]
         end
       end
 
       context 'when the expense lacks a payee' do
         it 'rejects the expense as invalid' do
-          actual_count = DB[:expenses].count
-
           expense.delete('payee')
 
           result = ledger.record(expense)
@@ -40,7 +37,7 @@ module ExpenseTracker
           expect(result.expense_id).to eq(nil)
           expect(result.error_message).to include('`payee` is required')
 
-          expect(DB[:expenses].count).to eq(actual_count)
+          expect(DB[:expenses].count).to eq(0)
         end
       end
     end
